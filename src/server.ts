@@ -13,11 +13,11 @@ app.use(express.json())
 //---------------------------------------------------------------------
 
 const username = "GustavoGebhardt"
-const email = "gustavorgebhardt@gmail.com"
-const password = "Gustavo131328!"
+const email = "gustavo@gmail.com"
+const password = "123123!"
 
 //storeUser(username, email, password)
-verifyPasswordByUsername("GustavoGebhardt", "Gustavo131328!")
+verifyPasswordByUsername("GustavoGebhardt", "123123!")
 
 async function run() {
     await database.sync(); // Cria as tabelas se não existirem
