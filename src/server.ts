@@ -1,8 +1,6 @@
 import express from 'express'
 import cors from 'cors'
-import { storeUser, verifyPasswordByUsername } from "../db/conection"
-import database from './database'
-import users from './models/users'
+import { createUser, loginUser } from './controllers/userController'
 
 const app = express()
 const port = 4000
@@ -12,22 +10,8 @@ app.use(express.json())
 
 //---------------------------------------------------------------------
 
-const username = "GustavoGebhardt"
-const email = "gustavo@gmail.com"
-const password = "123123!"
-
-//storeUser(username, email, password)
-verifyPasswordByUsername("GustavoGebhardt", "123123!")
-
-async function run() {
-    await database.sync(); // Cria as tabelas se não existirem
-    const novoUsuario = await users.create({
-        username: "GustavoGebhardt",
-        email: "gustavo@gmail.com",
-        password: "123123"
-    });
-}
-run()
+//createUser("GersonGebhardt", "gerson@gmail.com", "4321")
+//loginUser("gustavo@gmail.com", "123123")
 
 //---------------------------------------------------------------------
 
@@ -35,8 +19,12 @@ app.get("/", (req, res) => {
     res.send('Hello World!')
 })
 
-app.post("/session", (req, res) => {
-    if(req.body.email == "carlos@gmail.com" && req.body.senha == "123123"){
+app.post("/session", async (req, res) => {
+    console.log(req.body)
+    const email = req.body.email
+    const password = req.body.senha
+    const authenticated = await loginUser(email, password)
+    if(authenticated){
         res.status(200).send({massenge: "Success!"});
     } else {
         res.status(400).send({massenge: "Erro!"});
