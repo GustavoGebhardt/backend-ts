@@ -19,15 +19,22 @@ app.get("/", (req, res) => {
     res.send('Hello World!')
 })
 
-app.post("/session", async (req, res) => {
-    console.log(req.body)
-    const email = req.body.email
-    const password = req.body.senha
-    const authenticated = await loginUser(email, password)
+app.post("/login", async (req, res) => {
+    const authenticated = await loginUser(req.body.email, req.body.senha)
     if(authenticated){
-        res.status(200).send({massenge: "Success!"});
+        res.status(200).send(authenticated);
     } else {
-        res.status(400).send({massenge: "Erro!"});
+        res.status(400);
+    }
+})
+
+app.post("/createUser", async (req, res) => {
+    const userError = await createUser(req.body.username, req.body.email, req.body.password)
+    console.log(userError)
+    if(userError?.error){
+        res.status(400).send(userError);
+    } else {
+        res.status(200).send({success: "success"});
     }
 })
 

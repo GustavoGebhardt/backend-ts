@@ -15,10 +15,21 @@ async function verifyPasswordByEmail(email: string, password: string) {
             email: email
           }
     })
-    const hashedPassword = user[0].toJSON().password
-    const isPasswordMatch: boolean = await bcrypt.compare(password, hashedPassword)
-    console.log(isPasswordMatch)
-    return isPasswordMatch
+    if(user[0] != null){
+        const hashedPassword = user[0].toJSON().password
+        const isPasswordMatch: boolean = await bcrypt.compare(password, hashedPassword)
+        if(isPasswordMatch){
+            const authUser = {
+                id: user[0].toJSON().id,
+                email: user[0].toJSON().email,
+                username: user[0].toJSON().username
+            }
+            return authUser
+        }
+        return null
+    } else {
+        return null
+    }
 }
 
 export { createHashPassword, verifyPasswordByEmail}
