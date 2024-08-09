@@ -1,5 +1,6 @@
-import users from '../models/users'
+import users from '../models/usersModel'
 import { createHashPassword, verifyPasswordByEmail } from '../services/userServices'
+import nodemailer from "nodemailer"
 
 async function createUser(userName: string, email: string, password: string) {
     const erroEmail = {
@@ -26,11 +27,31 @@ async function createUser(userName: string, email: string, password: string) {
 
     if(findUsersEmail[0] == null && findUsersUsername[0] == null){
         const hashedPassword = await createHashPassword(password)
-        await users.create({
+        const user = await users.create({
             username: userName,
             email: email,
             password: hashedPassword
         });
+
+        const transponder = nodemailer.createTransport({
+            service: "gmail",
+            auth: {
+                user: process.env.EMAIL,
+                pass: process.env.EMAIL_PASSWORD
+            }
+        })
+        const mailOptions = {
+            from: process.env.EMAIL,
+            to: email,
+            subject: "Confirme seu email clicando no link abaixo.",
+            text: `http://localhost:3000/api/email?token=${user.dataValues.validation_id}`
+        }
+
+        transponder.sendMail(mailOptions, (error) => {
+            if(error){
+                console.log(error)
+            }
+        })
     }
     else if(findUsersEmail[0] != null && findUsersUsername[0] != null){
         console.log("1")

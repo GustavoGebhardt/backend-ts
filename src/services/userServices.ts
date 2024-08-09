@@ -1,6 +1,6 @@
 import bcrypt from "bcrypt"
 import dotenv from 'dotenv';
-import users from "../models/users";
+import users from "../models/usersModel";
 dotenv.config();
 
 async function createHashPassword(password: string) {
@@ -32,4 +32,34 @@ async function verifyPasswordByEmail(email: string, password: string) {
     }
 }
 
-export { createHashPassword, verifyPasswordByEmail}
+async function validateEmail(token: string) {
+    const user = await users.findAll({
+        where: {
+            validation_id: token
+        }
+    })
+
+    if(user[0] == null){
+        return null
+    }
+
+    const update = await users.update(
+        { 
+            checked: new Date(),
+            validation_id: null
+        },
+        {
+            where: {
+                id: user[0].toJSON().id
+            }
+        }
+    )
+
+    if(update){
+        return update
+    } else {
+        return null
+    }
+}
+
+export { createHashPassword, verifyPasswordByEmail, validateEmail}
